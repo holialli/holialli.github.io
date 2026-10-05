@@ -1,0 +1,62 @@
+title: Ali Ahmad
+tagline: Defensive security
+description: Cybersecurity student at FAST-NUCES Islamabad. Case files on AWS scanners, scan-gated deploys, detection rules and forensics tooling.
+url: https://holialli.github.io
+baseurl: ""
+lang: en
+timezone: Asia/Karachi
+
+email: alii.ahmad1305@gmail.com
+github_username: holialli
+linkedin_url: https://www.linkedin.com/in/holialli/
+
+author:
+  name: Ali Ahmad
+  url: https://holialli.github.io/about/
+
+social:
+  name: Ali Ahmad
+  links:
+    - https://github.com/holialli
+    - https://www.linkedin.com/in/holialli/
+
+markdown: kramdown
+kramdown:
+  input: GFM
+  syntax_highlighter_opts:
+    disable: true
+
+permalink: /writing/:title/
+
+plugins:
+  - jekyll-feed
+  - jekyll-sitemap
+  - jekyll-seo-tag
+  - jekyll-redirect-from
+
+feed:
+  path: feed.xml
+
+collections:
+  projects:
+    output: true
+    permalink: /projects/:name/
+
+defaults:
+  - scope:
+      path: ""
+    values:
+      image: /assets/img/og.png
+  - scope:
+      path: ""
+      type: posts
+    values:
+      layout: post
+  - scope:
+      path: ""
+      type: projects
+    values:
+      layout: project
+
+exclude:
+  - README.md

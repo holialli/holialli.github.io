@@ -1,0 +1,57 @@
+<!doctype html>
+<html lang="{{ site.lang | default: 'en' }}">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script>
+  (function () {
+    try {
+      var t = localStorage.getItem('theme');
+      if (t === 'light' || t === 'dark') document.documentElement.setAttribute('data-theme', t);
+    } catch (e) {}
+  })();
+</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:ital,wght@0,400;0,500;0,600;1,400&family=JetBrains+Mono:wght@400;500;700&display=swap">
+<link rel="stylesheet" href="{{ '/assets/css/site.css' | relative_url }}">
+<link rel="icon" href="{{ '/favicon.svg' | relative_url }}" type="image/svg+xml">
+{% feed_meta %}
+{% seo %}
+</head>
+<body>
+<a class="skip-link" href="#main">Skip to content</a>
+<div class="shell">
+  <aside class="sidebar">
+    <a class="brand" href="{{ '/' | relative_url }}">
+      <span class="brand-mark" aria-hidden="true">AA</span>
+      <span class="brand-text"><strong>Ali Ahmad</strong><span>{{ site.tagline | downcase }}</span></span>
+    </a>
+    {% assign path = page.url %}
+    <nav class="nav" aria-label="Main">
+      <a href="{{ '/' | relative_url }}"{% if path == '/' %} aria-current="page"{% endif %}>~/home</a>
+      <a href="{{ '/projects/' | relative_url }}"{% if path contains '/projects/' %} aria-current="page"{% endif %}>~/projects</a>
+      <a href="{{ '/writing/' | relative_url }}"{% if path contains '/writing/' %} aria-current="page"{% endif %}>~/writing</a>
+      <a href="{{ '/open-source/' | relative_url }}"{% if path contains '/open-source/' %} aria-current="page"{% endif %}>~/open-source</a>
+      <a href="{{ '/about/' | relative_url }}"{% if path contains '/about/' %} aria-current="page"{% endif %}>~/about</a>
+    </nav>
+    <div class="side-links">
+      <a href="mailto:{{ site.email }}">Email</a>
+      <a href="https://github.com/{{ site.github_username }}">GitHub</a>
+      <a href="{{ site.linkedin_url }}">LinkedIn</a>
+    </div>
+    <button type="button" class="theme-toggle" id="theme-toggle" hidden>theme</button>
+  </aside>
+
+  <main id="main" class="main">
+    {{ content }}
+
+    <footer class="site-footer">
+      <span>Working on something in cloud security? <a href="mailto:{{ site.email }}">{{ site.email }}</a></span>
+      <span class="footer-meta"><a href="{{ '/feed.xml' | relative_url }}">rss</a> · palette: nord</span>
+    </footer>
+  </main>
+</div>
+<script src="{{ '/assets/js/site.js' | relative_url }}" defer></script>
+</body>
+</html>

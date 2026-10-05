@@ -1,0 +1,23 @@
+---
+layout: default
+title: Projects
+description: Case files for each project, with the decisions behind it and the proof it works.
+---
+<section class="page">
+  <p class="crumb">~/projects</p>
+  <h1>Case files</h1>
+  <p class="lede">Each file covers the problem, what I built, the security decisions, the proof, and what I'd change.</p>
+  <div class="filters" id="filters" role="group" aria-label="Filter by area" hidden>
+    <button type="button" data-filter="all" aria-pressed="true">all</button>
+    <button type="button" data-filter="cloud" aria-pressed="false">cloud</button>
+    <button type="button" data-filter="devsecops" aria-pressed="false">devsecops</button>
+    <button type="button" data-filter="detection" aria-pressed="false">detection</button>
+    <button type="button" data-filter="forensics" aria-pressed="false">forensics</button>
+  </div>
+  {%- assign files = site.projects | sort: "file_no" %}
+  <div class="files">
+    {%- for p in files %}
+    {% include case-card.html project=p %}
+    {%- endfor %}
+  </div>
+</section>

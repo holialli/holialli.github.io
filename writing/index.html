@@ -1,0 +1,19 @@
+---
+layout: default
+title: Writing
+description: Write-ups on detection rules, cloud security and the mistakes I learned from.
+---
+<section class="page">
+  <p class="crumb">~/writing</p>
+  <h1>Writing</h1>
+  <p class="lede">Write-ups from my projects and labs, including the parts that didn't work. Subscribe with the <a href="{{ '/feed.xml' | relative_url }}">RSS feed</a>.</p>
+  <div class="post-list">
+    {%- for post in site.posts %}
+    <a class="post-row" href="{{ post.url | relative_url }}">
+      <span class="post-meta">{{ post.date | date: "%Y-%m-%d" }}{% if post.tags.size > 0 %} · {{ post.tags | join: " · " }}{% endif %}</span>
+      <strong>{{ post.title }}</strong>
+      <span>{{ post.description }}</span>
+    </a>
+    {%- endfor %}
+  </div>
+</section>

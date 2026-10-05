@@ -1,0 +1,43 @@
+---
+layout: default
+---
+{%- assign files = site.projects | sort: "file_no" -%}
+{%- for f in files -%}
+  {%- if f.url == page.url -%}
+    {%- assign i = forloop.index0 -%}
+  {%- endif -%}
+{%- endfor -%}
+{%- assign prev_i = i | minus: 1 -%}
+{%- assign next_i = i | plus: 1 -%}
+<article class="page">
+  <p class="crumb"><a href="{{ '/projects/' | relative_url }}">~/projects</a>/{{ page.slug }}</p>
+
+  <header class="case-head">
+    <div class="case-strip"><span>FILE {{ page.file_no }}</span><span>{{ page.area | upcase }}</span></div>
+    <div class="case-head-body">
+      <h1>{{ page.title }}</h1>
+      <p class="lede">{{ page.summary }}</p>
+      <dl class="meta-table">
+        <div><dt>STACK</dt><dd>{{ page.stack }}</dd></div>
+        <div><dt>STATUS</dt><dd>{{ page.status }}</dd></div>
+        <div><dt>PROOF</dt><dd>{{ page.proof }}</dd></div>
+        <div><dt>CODE</dt><dd>{% for r in page.repos %}<a href="{{ r }}">{{ r | remove: "https://github.com/" }}</a>{% unless forloop.last %}<br>{% endunless %}{% endfor %}</dd></div>
+      </dl>
+    </div>
+  </header>
+
+  <div class="prose">
+    {{ content }}
+  </div>
+
+  <nav class="case-nav" aria-label="Other case files">
+    {%- if i > 0 -%}
+      {%- assign prev = files[prev_i] -%}
+      <a href="{{ prev.url | relative_url }}">← FILE {{ prev.file_no }} {{ prev.title }}</a>
+    {%- else -%}<span></span>{%- endif -%}
+    {%- if next_i < files.size -%}
+      {%- assign next = files[next_i] -%}
+      <a href="{{ next.url | relative_url }}">FILE {{ next.file_no }} {{ next.title }} →</a>
+    {%- endif -%}
+  </nav>
+</article>

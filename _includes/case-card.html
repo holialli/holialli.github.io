@@ -1,0 +1,13 @@
+{%- assign p = include.project -%}
+<article class="case" data-area="{{ p.area | downcase }}">
+  <div class="case-strip"><span>FILE {{ p.file_no }}</span><span>{{ p.area | upcase }}</span></div>
+  <div class="case-body">
+    <h3><a href="{{ p.url | relative_url }}">{{ p.title }}</a></h3>
+    <p>{{ p.summary }}</p>
+    <dl class="meta-grid">
+      <div><dt>STACK</dt><dd>{{ p.stack_short | default: p.stack }}</dd></div>
+      <div><dt>PROOF</dt><dd>{{ p.proof_short }}</dd></div>
+    </dl>
+    <div class="case-links"><a href="{{ p.url | relative_url }}">Open case file</a><a href="{{ p.repo }}">Code</a></div>
+  </div>
+</article>

@@ -1,0 +1,39 @@
+---
+layout: default
+title: About
+description: Ali Ahmad, cybersecurity student at FAST-NUCES Islamabad, working on cloud security, DevSecOps, detection and forensics.
+---
+<section class="page">
+  <p class="crumb">~/about</p>
+  <h1>About</h1>
+  <div class="prose">
+    <p>I'm Ali, a cybersecurity student at FAST-NUCES Islamabad. I mostly work on the defensive side: securing AWS setups, building CI/CD pipelines that won't ship a leaked secret or a vulnerable dependency, and writing detection and forensics tooling.</p>
+    <p>Most of my projects started as a university assignment or something I wanted to understand properly, and then I kept going. I try to write down what I got wrong as well as what worked, which is what the <a href="{{ '/writing/' | relative_url }}">writing</a> section is for.</p>
+
+    <h2>How I build</h2>
+    <ul>
+      <li><strong>Read-only by default.</strong> Scanners and audit tools shouldn't be able to change what they audit. When a fix is automated, it's opt-in and named explicitly.</li>
+      <li><strong>Say what wasn't checked.</strong> A tool that can't see something should report that, not report a clean result.</li>
+      <li><strong>Test the quiet case.</strong> A detection has to stay silent on normal activity, not just fire on the attack.</li>
+      <li><strong>Keep evidence local.</strong> Forensic data stays on the examiner's machine unless they choose otherwise.</li>
+    </ul>
+
+    <h2>What I've worked with</h2>
+    <div class="table-scroll">
+      <table>
+        <thead><tr><th>Area</th><th>Tools</th><th>Where</th></tr></thead>
+        <tbody>
+          <tr><td>Cloud security</td><td>AWS (IAM, S3, EC2, KMS, SageMaker), boto3, moto</td><td><a href="{{ '/projects/aws-teardown/' | relative_url }}">aws-teardown</a>, <a href="{{ '/projects/cloudshield/' | relative_url }}">CloudShield</a>, <a href="{{ '/open-source/' | relative_url }}">Prowler</a></td></tr>
+          <tr><td>DevSecOps</td><td>GitHub Actions, Gitleaks, Snyk, Trivy, OWASP ZAP, Docker</td><td><a href="{{ '/projects/gameverse/' | relative_url }}">GameVerse</a></td></tr>
+          <tr><td>Infrastructure</td><td>Terraform, Cloudflare, AWS SSM, Nginx</td><td><a href="{{ '/projects/gameverse/' | relative_url }}">gameverse-infra</a></td></tr>
+          <tr><td>Detection</td><td>Suricata, Filebeat, Elasticsearch, Kibana</td><td><a href="{{ '/projects/soc-lab/' | relative_url }}">SOC Lab</a></td></tr>
+          <tr><td>Forensics</td><td>The Sleuth Kit (pytsk3), libewf, scikit-learn, FAISS, Ollama</td><td><a href="{{ '/projects/vigilance-core/' | relative_url }}">Vigilance Core</a></td></tr>
+          <tr><td>Languages</td><td>Python, JavaScript/Node, React</td><td>Everywhere above</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h2>Contact</h2>
+    <p>The quickest way to reach me is email: <a href="mailto:{{ site.email }}">{{ site.email }}</a>. I'm also on <a href="{{ site.linkedin_url }}">LinkedIn</a> and <a href="https://github.com/{{ site.github_username }}">GitHub</a>.</p>
+  </div>
+</section>

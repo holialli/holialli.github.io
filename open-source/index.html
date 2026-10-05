@@ -1,0 +1,25 @@
+---
+layout: default
+title: Open source
+description: Contributions to open-source security tools.
+---
+<section class="page">
+  <p class="crumb">~/open-source</p>
+  <h1>Open source</h1>
+  <p class="lede">Contributions to security tools I use. Status is kept honest: in progress means not yet submitted or merged.</p>
+
+  <article class="case">
+    <div class="case-strip"><span>PROWLER</span><span>AWS · PYTHON</span></div>
+    <div class="case-body">
+      <h3>SageMaker compilation job output encryption check</h3>
+      <span class="status">in progress</span>
+      <p>A new Prowler check that fails when a SageMaker Neo compilation job's output isn't encrypted with a customer-managed KMS key, for <a href="https://github.com/prowler-cloud/prowler/issues/12604">issue #12604</a> in Prowler's AWS AI/ML security initiative.</p>
+      <ul class="chips">
+        <li class="chip">collector + check</li>
+        <li class="chip chip-green">15 new tests</li>
+        <li class="chip chip-yellow">needs live AWS validation</li>
+      </ul>
+      <p>It adds compilation-job inventory to Prowler's SageMaker service, reports MANUAL rather than guessing when AWS calls fail, and treats AWS-managed <code>alias/aws/*</code> keys as a failure since the check is about keys you control.</p>
+    </div>
+  </article>
+</section>

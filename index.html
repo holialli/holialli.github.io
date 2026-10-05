@@ -1,71 +1,61 @@
-<!doctype html>
-<html lang="en">
-<head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Ali Ahmad</title>
-  <meta name="description" content="Ali Ahmad: cybersecurity student at FAST-NUCES Islamabad working on cloud security, DevSecOps and detection engineering.">
-  <link rel="stylesheet" href="style.css">
-</head>
-<body>
-  <div class="wrap">
-    <header class="site">
-      <h1>Ali Ahmad</h1>
-      <p class="tagline">Cybersecurity student at FAST-NUCES Islamabad. I mostly work on the defensive side: securing AWS setups, building pipelines that won't ship a leaked secret, and writing detection and forensics tooling.</p>
-      <nav class="links">
-        <a href="https://github.com/holialli">GitHub</a>
-        <a href="https://www.linkedin.com/in/holialli/">LinkedIn</a>
-        <a href="#projects">Projects</a>
-        <a href="#writing">Writing</a>
-      </nav>
-    </header>
-
-    <section id="projects">
-      <h2>Projects</h2>
-      <div class="projects">
-        <div class="card">
-          <h3><a href="https://github.com/holialli/Vigilance-Core">Vigilance Core</a></h3>
-          <p>Forensics tool for Windows disk images. Carves event logs, registry hives, prefetch, SRUM, USB history and more into one artifact table, flags anomalies with an Isolation Forest plus hard rules, and answers questions about the case in plain English with every claim cited to its artifact. Runs fully offline with Ollama.</p>
-          <ul class="tags"><li>Python</li><li>DFIR</li><li>Isolation Forest</li><li>RAG</li></ul>
-        </div>
-        <div class="card">
-          <h3><a href="https://github.com/holialli/cloudshield">CloudShield</a></h3>
-          <p>Read-only AWS posture scanner. IAM, S3 and EC2 checks mapped to CIS, sweeps every enabled region in one run, and outputs PDF and JSON. It only changes the account if you explicitly pass <code>--remediate --allow</code>.</p>
-          <ul class="tags"><li>Python</li><li>AWS</li><li>CSPM</li><li>CIS</li></ul>
-        </div>
-        <div class="card">
-          <h3><a href="https://github.com/holialli/aws-teardown">aws-teardown</a></h3>
-          <p>Finds what an AWS tutorial left running, in every region, with a monthly cost estimate and the delete commands in an order that works. Snapshot before a tutorial, diff after, and you see only what the tutorial created.</p>
-          <ul class="tags"><li>Python</li><li>AWS</li><li>boto3</li><li>CLI</li></ul>
-        </div>
-        <div class="card">
-          <h3><a href="https://github.com/holialli/GameVerse">GameVerse</a> &amp; <a href="https://github.com/holialli/gameverse-infra">gameverse-infra</a></h3>
-          <p>A MERN gaming platform I use as a DevSecOps testbed: nothing deploys until secret, dependency and container scans pass. It ran for six months on EC2 behind Cloudflare, built with Terraform, with Cloudflare-only ingress and SSM instead of SSH, and now runs on Render and Vercel.</p>
-          <ul class="tags"><li>GitHub Actions</li><li>Terraform</li><li>Cloudflare</li><li>MERN</li></ul>
-        </div>
-        <div class="card">
-          <h3><a href="https://github.com/holialli/soc-lab-suricata-elk">SOC Lab: Suricata + ELK</a></h3>
-          <p>A VirtualBox SOC with an inline Suricata IDS and 30 rules I wrote, from recon to lateral movement, tested by attacking Metasploitable from Kali and investigating the alerts in Kibana.</p>
-          <ul class="tags"><li>Suricata</li><li>ELK</li><li>Detection</li></ul>
-        </div>
-      </div>
-    </section>
-
-    <section id="writing">
-      <h2>Writing</h2>
-      <ul class="posts">
-        <li><span class="date">2026-10</span><a href="posts/suricata-ssh-brute-force.html">My Suricata SSH brute-force rule worked for the wrong reason</a></li>
-      </ul>
-    </section>
-
-    <section>
-      <h2>Tools I reach for</h2>
-      <p class="skills">Python, JavaScript/Node, React · AWS, Terraform, Docker, GitHub Actions, Jenkins · Suricata, ELK, The Sleuth Kit</p>
-    </section>
-
-    <footer>
-      Currently spending most of my time on cloud security automation and contributing to open-source security tools. If you're working on something in that space, <a href="https://www.linkedin.com/in/holialli/">get in touch</a>.
-    </footer>
+---
+layout: default
+title: Ali Ahmad
+description: Cybersecurity student at FAST-NUCES Islamabad. Case files on AWS scanners, scan-gated deploys, detection rules and forensics tooling.
+---
+<section class="hero">
+  <div class="terminal">
+    <p><span class="t-user">ali@nuces</span><span class="t-path">:~$</span> whoami</p>
+    <p class="t-out">cybersecurity student · FAST-NUCES Islamabad</p>
+    <p><span class="t-user">ali@nuces</span><span class="t-path">:~$</span> cat focus.txt</p>
+    <p class="t-out">cloud security · devsecops · detection · forensics</p>
+    <p><span class="t-user">ali@nuces</span><span class="t-path">:~$</span> cat now.txt</p>
+    <p class="t-out">{{ site.data.now }}</p>
+    <p><span class="t-user">ali@nuces</span><span class="t-path">:~$</span> <span class="t-cursor" aria-hidden="true"></span></p>
   </div>
-</body>
-</html>
+  <h1>I build tools that keep cloud accounts and pipelines from quietly going wrong.</h1>
+  <p class="lede">Read-only AWS scanners, deploy gates that stop leaked secrets, Suricata rules, and a forensics tool that cites its evidence. Every project has a case file with the decisions and the proof.</p>
+  <div class="actions">
+    <a class="btn" href="{{ '/projects/' | relative_url }}">Open the case files</a>
+    <a class="btn btn-ghost" href="mailto:{{ site.email }}">Email me</a>
+  </div>
+</section>
+
+<section class="section" aria-labelledby="featured">
+  <div class="section-head">
+    <h2 class="prompt" id="featured">ls ~/projects --featured</h2>
+    <a class="more" href="{{ '/projects/' | relative_url }}">All case files →</a>
+  </div>
+  {%- assign featured = site.projects | where: "featured", true | sort: "file_no" %}
+  <div class="files">
+    {%- for p in featured %}
+    {% include case-card.html project=p %}
+    {%- endfor %}
+  </div>
+</section>
+
+<div class="split">
+  <section class="section" aria-labelledby="writing">
+    <h2 class="prompt" id="writing">tail ~/writing</h2>
+    <div class="post-list">
+      {%- for post in site.posts limit: 3 %}
+      <a class="post-row" href="{{ post.url | relative_url }}">
+        <span class="post-meta">{{ post.date | date: "%Y-%m" }}{% if post.tags.size > 0 %} · {{ post.tags | join: " · " }}{% endif %}</span>
+        <strong>{{ post.title }}</strong>
+        <span>{{ post.description }}</span>
+      </a>
+      {%- endfor %}
+    </div>
+  </section>
+
+  <section class="section" aria-labelledby="log">
+    <h2 class="prompt" id="log">git log --oneline</h2>
+    <div class="panel">
+      <ol class="log">
+        {%- for e in site.data.log limit: 6 %}
+        <li><span class="log-date">{{ e.date }}</span><span>{% if e.link %}<a href="{{ e.link | relative_url }}">{{ e.text }}</a>{% else %}{{ e.text }}{% endif %}</span></li>
+        {%- endfor %}
+      </ol>
+    </div>
+  </section>
+</div>

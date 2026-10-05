@@ -1,0 +1,19 @@
+# Newest first. Shown on the home page (latest 6).
+- date: 2026-10
+  text: Started a Prowler contribution, a SageMaker encryption check
+  link: /open-source/
+- date: 2026-10
+  text: "Wrote up my Suricata SSH brute-force rule mistake"
+  link: /writing/suricata-ssh-brute-force/
+- date: 2026-10
+  text: Released aws-teardown
+  link: /projects/aws-teardown/
+- date: 2026-09
+  text: Moved GameVerse from EC2 to Render and Vercel
+  link: /projects/gameverse/
+- date: 2026-03
+  text: GameVerse went live on a Terraform-built EC2 host behind Cloudflare
+  link: /projects/gameverse/
+- date: 2025-08
+  text: Built the Suricata + ELK SOC lab
+  link: /projects/soc-lab/
