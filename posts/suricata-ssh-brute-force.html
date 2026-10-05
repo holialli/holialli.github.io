@@ -1,0 +1,99 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Suricata SSH Brute Force</title>
+  <meta name="description" content="Why a thresholded Suricata rule for SSH brute force caught Hydra in my lab for the wrong reason, and how to write it so it counts connection attempts instead of packets.">
+  <link rel="stylesheet" href="../style.css">
+</head>
+<body>
+  <div class="wrap">
+    <article>
+      <a class="back" href="../">← Ali Ahmad</a>
+      <h1>My Suricata SSH brute-force rule worked for the wrong reason</h1>
+      <p class="meta">October 2026 · from my <a href="https://github.com/holialli/soc-lab-suricata-elk">Suricata + ELK SOC lab</a></p>
+
+      <p>I built a small SOC lab in VirtualBox: Kali as the attacker, Metasploitable2 as the victim, and a third VM running Suricata inline between them, so every packet in either direction passes through the IDS. Suricata writes EVE JSON, Filebeat ships it to Elasticsearch, and I investigate in Kibana. I wrote 30 rules for it, ran Nmap, Hydra and Metasploit from Kali, and watched the alerts come in.</p>
+
+      <p>The SSH brute-force rule fired when I ran Hydra against the victim, so I moved on. Coming back to it later, I realised it would also have fired on me logging in once. This post is about why, and what the rule should look like.</p>
+
+      <h2>What a network IDS can actually see of SSH</h2>
+      <p>SSH encrypts everything after the key exchange, so Suricata never sees a password or a "login failed" message. What it <em>can</em> see is:</p>
+      <ul>
+        <li>every TCP connection to port 22, and how often a given source opens them;</li>
+        <li>the version banners both sides send in the clear before encryption starts (<code>SSH-2.0-OpenSSH_…</code>, for example);</li>
+        <li>packet sizes and timing.</li>
+      </ul>
+      <p>So a network rule can't confirm that a password guess failed. It can spot the <em>shape</em> of a brute force: one source opening lots of short connections to SSH. Confirming the failures is the job of the server's own logs (<code>/var/log/auth.log</code>), and in a real SOC you'd correlate the two.</p>
+
+      <h2>The rule I wrote</h2>
+<pre><code>alert tcp any any -> 192.168.154.20 22 (msg:"SSH Brute Force";
+  threshold:type both, track by_src, count 5, seconds 60;
+  classtype:attempted-admin; sid:2000008; rev:1;)</code></pre>
+      <p>Read it literally: alert when one source sends <strong>5 or more TCP packets</strong> to port 22 within 60 seconds. Nothing in it says "connection". Every SYN, ACK, key-exchange message and keystroke counts.</p>
+      <p>A single normal SSH login sends far more than five packets in its first few seconds: the TCP handshake, the banner exchange, the key exchange, then authentication. So this rule fires on any SSH session at all. It caught Hydra only because Hydra sends packets to port 22, like everyone else.</p>
+
+      <blockquote><p>A detection that fires on both the attack and normal use isn't detecting the attack. Test the negative case too, not just the attack.</p></blockquote>
+
+      <h2>Suricata's counting options</h2>
+      <p>Part of the problem was that I didn't fully understand the counting keywords. They behave differently:</p>
+      <div class="table-scroll">
+      <table>
+        <thead><tr><th>Keyword</th><th>What you get</th></tr></thead>
+        <tbody>
+          <tr><td><code>threshold: type threshold</code></td><td>An alert on every Nth match in the window (count 5 means alerts on the 5th, 10th, 15th…).</td></tr>
+          <tr><td><code>threshold: type limit</code></td><td>At most N alerts per window, starting from the first match.</td></tr>
+          <tr><td><code>threshold: type both</code></td><td>One alert per window, once the count is reached. Good for "this source is doing X a lot".</td></tr>
+          <tr><td><code>detection_filter</code></td><td>Silent until the count is reached, then an alert on <em>every</em> match after that within the window.</td></tr>
+        </tbody>
+      </table>
+      </div>
+      <p><code>type both</code> was the right choice for brute force: an analyst wants one alert per attacker per minute, not hundreds. The mistake was in <em>what</em> was being counted.</p>
+
+      <h2>Count connection attempts, not packets</h2>
+      <p>Each new TCP connection starts with exactly one SYN from the client, so counting SYNs means counting connection attempts:</p>
+<pre><code>alert tcp any any -> $HOME_NET 22 (msg:"LOCAL Possible SSH brute force (5+ new connections from one source in 60s)";
+  flags:S,12;
+  threshold:type both, track by_src, count 5, seconds 60;
+  classtype:attempted-admin; sid:1000008; rev:2;)</code></pre>
+      <p>What changed and why:</p>
+      <ul>
+        <li><strong><code>flags:S,12</code></strong> matches packets with only SYN set, ignoring the two ECN bits (CWR and ECE, which is what the <code>12</code> means). A SYN-ACK or anything later in the session doesn't match.</li>
+        <li><strong><code>$HOME_NET</code></strong> instead of a hardcoded victim IP, so the rule follows <code>suricata.yaml</code>. I kept the source as <code>any</code> instead of <code>$EXTERNAL_NET</code> on purpose. <code>$EXTERNAL_NET</code> usually means <code>!$HOME_NET</code>, so in a single-subnet lab like mine, where the attacker sits on the same network as the victim, the rule would never match. And an insider brute-forcing a server is exactly what you want to see anyway.</li>
+        <li><strong>A SID in the 1,000,000 range.</strong> My originals used 2,000,000+, which is Emerging Threats' range and can collide if you load ET Open alongside.</li>
+      </ul>
+      <p>The count is a trade-off. OpenSSH allows several password attempts per connection, so a patient attacker can stay under five connections a minute, while automation such as Ansible or a backup script can legitimately open more. For known automation hosts, suppress the rule for that source in <code>threshold.config</code> rather than raising the count for everyone:</p>
+<pre><code>suppress gen_id 1, sig_id 1000008, track by_src, ip 10.0.0.5</code></pre>
+
+      <h2>A second, weaker signal: the client banner</h2>
+      <p>The client's version banner is sent before encryption, and Suricata exposes it as <code>ssh.software</code>. Attack tools are often built on SSH libraries rather than OpenSSH, so the banner can hint at what's connecting. Check your own <code>eve.json</code> to see what your attacker actually sends before relying on it. Legitimate tools use these libraries too, so I'd only use this to add context to the alert above, not as an alert on its own.</p>
+
+      <h2>Testing rules without re-running the attack</h2>
+      <p>The habit I'd change most is testing. Rather than attacking the lab and watching Kibana, record traffic once and replay it as often as you like:</p>
+<pre><code># 1. Syntax-check the rules
+sudo suricata -T -c /etc/suricata/suricata.yaml -S custom.rules
+
+# 2. Record two captures on the IDS: one Hydra run, one normal single login
+sudo tcpdump -i eth0 -w hydra.pcap port 22
+sudo tcpdump -i eth0 -w normal-login.pcap port 22
+
+# 3. Replay each capture through only your rules and count what fired
+suricata -r hydra.pcap -c /etc/suricata/suricata.yaml -S custom.rules -l out-hydra/
+jq -r 'select(.event_type=="alert") | .alert.signature' out-hydra/eve.json | sort | uniq -c</code></pre>
+      <p><code>-S</code> loads that rules file on its own, so nothing else interferes. The brute-force rule should fire on <code>hydra.pcap</code> and stay silent on <code>normal-login.pcap</code>. The original rule fails the second test, which is the one I never ran.</p>
+
+      <h2>What I took from it</h2>
+      <ul>
+        <li>Be precise about what a rule counts. "Five packets" and "five connection attempts" are very different detections.</li>
+        <li>Test the negative case. A rule that fires on the attack proves nothing until you know it stays quiet on normal traffic.</li>
+        <li>Use the network for the pattern and the host for the proof: Suricata sees the connection storm, <code>auth.log</code> sees the failures.</li>
+      </ul>
+      <p>The original rules, the lab setup and the Kibana screenshots are on <a href="https://github.com/holialli/soc-lab-suricata-elk">GitHub</a>.</p>
+    </article>
+    <footer>
+      <a href="../">← All projects and posts</a> · <a href="https://www.linkedin.com/in/holialli/">LinkedIn</a>
+    </footer>
+  </div>
+</body>
+</html>
