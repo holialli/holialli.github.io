@@ -178,6 +178,7 @@ h1 { font-size: 44px; letter-spacing: -0.02em; font-weight: 600; margin: 0; }
 }
 @keyframes blink { 50% { opacity: 0; } }
 @media (prefers-reduced-motion: reduce) { .t-cursor { animation: none; } }
+@media (max-width: 520px) { .terminal { padding: 18px; font-size: 14px; } .terminal p { white-space: normal; } }
 
 .hero { display: flex; flex-direction: column; gap: 20px; }
 .actions { display: flex; flex-wrap: wrap; gap: 12px; }
