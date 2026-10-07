@@ -31,7 +31,7 @@ push ─▶ Gitleaks ─▶ tests ─▶ Snyk (API + frontend) ─▶ build imag
 
 1. **Gitleaks** scans the repository for committed credentials.
 2. The backend tests run, then **Snyk** checks both the API and frontend dependencies and fails the build on critical CVEs.
-3. Both Docker images are built and scanned with **Trivy** for high and critical CVEs before they're pushed. (Trivy currently reports without failing the build; see below.)
+3. Both Docker images are built and scanned with **Trivy** before they're pushed. A critical CVE that has a fix available fails the build; high-severity findings are reported. The gate failed on its first run: the npm that ships inside the `node:20-alpine` base image bundled a `node-tar` with a critical CVE. Neither container runs npm, so the images now delete it after their last install. That also removed the high-severity findings that came from npm's other bundled packages.
 4. Only then does the workflow call Render's deploy hook, for the exact commit that was scanned. Render's own auto-deploy is turned off, so nothing skips the gates.
 5. The workflow waits until `/api/health` reports that commit, then runs an **OWASP ZAP** baseline scan against the live build.
 
@@ -56,7 +56,6 @@ In September 2026 the AWS free plan ended, so the API moved to Render and the fr
 
 In the pipeline:
 
-- Make the Trivy step fail the build on critical findings (`exit-code: 1`). Right now it only reports, so the container scan isn't a real gate yet.
 - Consider failing on high-severity dependency CVEs too, not only critical.
 
 In the Terraform, looking back:
